@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Stage from './Stage'
 import Display from './Display'
 import StartButton from './StartButton'
-import { createStage } from './gameHelpers'
+import { createStage, checkCollision } from './gameHelpers'
 import { usePlayer } from './hooks/usePlayer'
 import { useStage } from './hooks/useStage'
 import { StyledTetrisWrapper, StyledTetris } from './styles/StyledTetris';
@@ -10,22 +10,34 @@ import { StyledTetrisWrapper, StyledTetris } from './styles/StyledTetris';
 const Tetris = () => {
     const [dropTime, setDropTime] = useState(null)
     const [gameOver, setGameOver] = useState(false)
-    const [player,updatePlayerPos, resetPlayer] = usePlayer();
-    const [stage, setStage] = useStage(player);
+    const [player, updatePlayerPos, resetPlayer] = usePlayer();
+    const [stage, setStage] = useStage(player, resetPlayer);
 
     console.log('re-render')
-    const movePlayer = dir => {
-        updatePlayerPos({ x: dir, y: 0, colliede: false })
 
+    const movePlayer = dir => {
+        console.log(dir)
+        if (!checkCollision(player, stage, { x: dir, y: 0 })) {
+            updatePlayerPos({ x: dir, y: 0 });
+        }
     }
     const startGame = () => {
         setStage(createStage())
         resetPlayer()
-
-
+        setGameOver(false);
     }
+
     const drop = () => {
-        updatePlayerPos({ x: 0, y: 1, colliede: false })
+        if (!checkCollision(player, stage, { x: 0, y: 1 })) {
+            updatePlayerPos({ x: 0, y: 1, collided: false })
+        } else {
+            if (player.pos.y < 1) {
+                console.log("GAME OVER!");
+                setGameOver(true);
+                setDropTime(null);
+            }
+            updatePlayerPos({ x: 0, y: 0, collided: true });
+        }
 
     }
     const dropPlayer = () => {
@@ -60,7 +72,7 @@ const Tetris = () => {
                             <Display text="Level" />
                         </div>
                     }
-                    <StartButton />
+                    <StartButton callback={startGame} />
                 </aside>
             </StyledTetris>
         </StyledTetrisWrapper>
