@@ -35,7 +35,6 @@ export const usePlayer = () => {
     }
 
     const updatePlayerPos = ({ x, y, collided }) => {
-        console.log(x, y, player.pos.x, player.pos.y)
         setPlayer(prev => (
             {
                 ...prev,
