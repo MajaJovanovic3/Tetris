@@ -10,13 +10,10 @@ import { StyledTetrisWrapper, StyledTetris } from './styles/StyledTetris';
 const Tetris = () => {
     const [dropTime, setDropTime] = useState(null)
     const [gameOver, setGameOver] = useState(false)
-    const [player, updatePlayerPos, resetPlayer] = usePlayer();
+    const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer();
     const [stage, setStage] = useStage(player, resetPlayer);
 
-    console.log('re-render')
-
     const movePlayer = dir => {
-        console.log(dir)
         if (!checkCollision(player, stage, { x: dir, y: 0 })) {
             updatePlayerPos({ x: dir, y: 0 });
         }
@@ -55,6 +52,8 @@ const Tetris = () => {
             }
             else if (e.keyCode === 40) {
                 dropPlayer()
+            } else if (e.keyCode === 38) {
+                playerRotate(stage,1)
             }
         }
     }
